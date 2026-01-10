@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'customers',
     'orders.apps.OrdersConfig',
     'rest_framework',
+    'django_filters',
 ]
 
 
@@ -54,7 +55,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5,
 }
 
-#AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
 
 
 MIDDLEWARE = [
