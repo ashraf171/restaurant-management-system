@@ -12,4 +12,12 @@ class User(AbstractUser):
 
     role=models.CharField(max_length=10,choices=Role.choices,default=Role.STAFF)
 
-    
+
+
+
+
+
+
+
+
+
