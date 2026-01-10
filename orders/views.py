@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 
+<<<<<<< HEAD
 from .models import Order
 from .serializers import OrderSerializer
 from restaurant_management_system.permissions import (
@@ -27,10 +28,33 @@ class OrderViewSet(ModelViewSet):
             permission_classes = [IsStaffOrManagerOrAdmin]
         elif self.action == 'update_status':
             permission_classes = [IsManagerOrAdmin]
+=======
+# Create your views here.
+from django.shortcuts import render
+from .models import Order
+from rest_framework.viewsets import ModelViewSet
+from restaurant-management-system import IsAdmin,IsManagerOrAdmin,IsStaffOrManagerOrAdmin
+from  .serializers import OrderSerializer
+
+# Create your views here.
+class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    def get_permissions(self):
+        if self.action in ['create', 'list', 'retrieve']:
+            permission_classes = [IsStaffOrManagerOrAdmin]
+
+
+        elif self.action == 'update_status':
+            permission_classes = [IsManagerOrAdmin]
+
+
+>>>>>>> 932d5aee7384e398da1f3c3f9b1def243bdf7457
         else:
             permission_classes = [IsManagerOrAdmin]
 
         return [permission() for permission in permission_classes]
+<<<<<<< HEAD
 
     
     @action(detail=True, methods=['put'])
@@ -66,3 +90,5 @@ class OrderViewSet(ModelViewSet):
             {"message": f"Order status updated to {order.status}"},
             status=status.HTTP_200_OK
         )
+=======
+>>>>>>> 932d5aee7384e398da1f3c3f9b1def243bdf7457
