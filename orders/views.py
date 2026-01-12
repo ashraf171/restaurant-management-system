@@ -29,7 +29,7 @@ class OrderViewSet(ModelViewSet):
             permission_classes = [IsManagerOrAdmin]
         return [permission() for permission in permission_classes]
 
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['put'], url_path='status')
     def update_status(self, request, pk=None):
         order = self.get_object()
         new_status = request.data.get('status')
