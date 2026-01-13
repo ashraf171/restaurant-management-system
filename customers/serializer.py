@@ -5,6 +5,7 @@ from .models import Customer
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta :
         model = Customer
-        fields = '__all__'
+        fields = ['id','first_name','last_name','email','phone','address','registration_date']
+        read_only_fields=['registration_date']
 
 
