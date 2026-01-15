@@ -1,3 +1,7 @@
+from django.shortcuts import render
+
+# Create your views here.
+
 from rest_framework import viewsets, filters, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Category, Product
@@ -19,6 +23,11 @@ class ProductPermission(permissions.BasePermission):
         if getattr(request.user, "is_staff", False) and view.action in ['list', 'retrieve']:
             return True
         return False
+
+
+
+
+
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
