@@ -1,3 +1,14 @@
-from django.shortcuts import render
+# users
+from rest_framework import viewsets, permissions
+from .models import User
+from .serializers import UserSerializer
 
-# Create your views here.
+class IsAdminUserCustom(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_admin
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUserCustom]
+

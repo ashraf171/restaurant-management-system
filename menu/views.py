@@ -1,3 +1,31 @@
-from django.shortcuts import render
+from rest_framework import viewsets, filters, permissions
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Category, Product
+from .serializers import CategorySerializer, ProductSerializer
 
-# Create your views here.
+class CategoryPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_admin or request.user.is_manager:
+            return True
+        return False
+
+class ProductPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_admin or request.user.is_manager:
+            return True
+        if request.user.is_staff and view.action in ['list', 'retrieve']:
+            return True
+        return False
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [CategoryPermission]
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['category', 'price']
+    search_fields = ['name', 'description']
+    permission_classes = [ProductPermission]

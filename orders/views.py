@@ -1,52 +1,21 @@
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import action
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework import status
-from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework.decorators import action
 from .models import Order
 from .serializers import OrderSerializer
-from restaurant_management_system.permissions import (
-    IsManagerOrAdmin,
-    IsAdmin,
-    IsStaffOrManagerOrAdmin
-)
+from .permissions import IsStaffOrManagerOrAdmin
 
-class OrderViewSet(ModelViewSet):
-    queryset = Order.objects.all().order_by('-order_date')
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    http_method_names = ['get', 'post', 'put']
+    permission_classes = [IsStaffOrManagerOrAdmin]
 
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['customer', 'status']
-
-    def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'create']:
-            permission_classes = [IsStaffOrManagerOrAdmin]
-        elif self.action == 'update_status':
-            permission_classes = [IsManagerOrAdmin]
-        else:
-            permission_classes = [IsManagerOrAdmin]
-        return [permission() for permission in permission_classes]
-
-    @action(detail=True, methods=['put'], url_path='status')
+    @action(detail=True, methods=['put'])
     def update_status(self, request, pk=None):
         order = self.get_object()
-        new_status = request.data.get('status')
-
-        if not new_status:
-            return Response({"error": "Status field is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            if new_status == 'Preparing':
-                order.set_preparing()
-            elif new_status == 'Ready':
-                order.set_ready()
-            elif new_status == 'Delivered':
-                order.set_delivered()
-            else:
-                return Response({"error": "Invalid status value"}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({"message": f"Order status updated to {order.status}"}, status=status.HTTP_200_OK)
+        status_value = request.data.get("status")
+        if status_value not in dict(Order.STATUS_CHOICES):
+            return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+        order.status = status_value
+        order.save()
+        return Response({"status": order.status})

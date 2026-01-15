@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>نظام إدارة المطعم </title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: linear-gradient(135deg, #f9f9f9, #e9ecef);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+        header {
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            color: white;
+            padding: 25px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        }
+        h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 1px;
+        }
+        p {
+            color: #555;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            padding: 30px;
+            max-width: 1100px;
+            margin: auto;
+        }
+        .bottom-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 280px;
+            text-align: center;
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        .card a {
+            display: block;
+            font-size: 20px;
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+        .card a:hover {
+            color: #0056b3;
+        }
+        .desc {
+            color: #666;
+            font-size: 15px;
+        }
+        footer {
+            margin-top: auto;
+            background: #f1f1f1;
+            padding: 15px;
+            font-size: 14px;
+            color: #777;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>مرحباً بك في نظام إدارة المطعم </h1>
+    </header>
+    <h1>**********************</h1>
+    <p>اختر من الروابط التالية:</p>
+
+    <div class="container">
+        <div class="card">
+            <a href="/admin/">لوحة الإدارة</a>
+            <div class="desc">إدارة النظام والمستخدمين</div>
+        </div>
+        <div class="card">
+            <a href="/api/users/">واجهة المستخدمين</a>
+            <div class="desc">عرض وإدارة بيانات المستخدمين</div>
+        </div>
+        <div class="card">
+            <a href="/api/menu/">واجهة القائمة</a>
+            <div class="desc">إدارة الأصناف والمنتجات</div>
+        </div>
+    </div>
+
+    <div class="bottom-row">
+        <div class="card">
+            <a href="/api/customers/">واجهة العملاء</a>
+            <div class="desc">إدارة بيانات العملاء</div>
+        </div>
+        <div class="card">
+            <a href="/api/orders/">واجهة الطلبات</a>
+            <div class="desc">إدارة وإنشاء الطلبات</div>
+        </div>
+    </div>
+
+    <footer>
+         2026 نظام إدارة المطعم  - Back-end Django v.9 x1 Restaurant Management System
+    </footer>
+</body>
+</html>

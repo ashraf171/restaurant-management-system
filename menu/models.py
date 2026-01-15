@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 
-# Create your models here.
 
 class Category(models.Model):
     name = models.CharField(max_length=120, db_index=True)
@@ -16,10 +15,12 @@ class Category(models.Model):
         verbose_name = "Category"
         verbose_name_plural = "Categories"
         ordering = ['name']
+
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)  
+            self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
