@@ -1,12 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
-
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
             raise ValueError("Email is required")
-
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
@@ -17,15 +15,11 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('role', User.Role.ADMIN)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-
         if extra_fields.get('role') != User.Role.ADMIN:
             raise ValueError("Superuser must have role=ADMIN")
-
         return self.create_user(username, email, password, **extra_fields)
 
-
 class User(AbstractUser):
-
     class Role(models.TextChoices):
         ADMIN = 'admin', 'Admin'
         MANAGER = 'manager', 'Manager'

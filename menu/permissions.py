@@ -6,6 +6,8 @@ class CategoryPermission(permissions.BasePermission):
 
 class ProductPermission(permissions.BasePermission):
     def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
         if request.user.role in ['admin', 'manager']:
             return True
         if request.user.role == 'staff' and view.action in ['list', 'retrieve']:

@@ -5,17 +5,21 @@ from .serializers import CategorySerializer, ProductSerializer
 
 class CategoryPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_admin or request.user.is_manager:
-            return True
-        return False
+        if not request.user.is_authenticated:
+            return False
+        return getattr(request.user, "is_admin", False) or getattr(request.user, "is_manager", False)
+
 
 class ProductPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_admin or request.user.is_manager:
+        if not request.user.is_authenticated:
+            return False
+        if getattr(request.user, "is_admin", False) or getattr(request.user, "is_manager", False):
             return True
-        if request.user.is_staff and view.action in ['list', 'retrieve']:
+        if getattr(request.user, "is_staff", False) and view.action in ['list', 'retrieve']:
             return True
         return False
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()

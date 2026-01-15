@@ -66,6 +66,7 @@ class OrderItem(models.Model):
     def save(self, *args, **kwargs):
         if not self.product.is_available:
             raise ValidationError(f"{self.product.name} is not available for order.")
+        self.price = self.product.price
         self.subtotal = self.price * self.quantity
         super().save(*args, **kwargs)
         self.order.update_total_amount()
