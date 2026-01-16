@@ -26,14 +26,11 @@ class ProductPermission(permissions.BasePermission):
 
 
 
-
-
-
-
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [CategoryPermission]
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -42,3 +39,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     filterset_fields = ['category', 'price']
     search_fields = ['name', 'description']
     permission_classes = [ProductPermission]
+
+    def get_queryset(self):
+        user=self.request.user
+        if user.role == 'staff':
+            return Product.objects.filter(is_available=True)
+        return Product.objects.all()
