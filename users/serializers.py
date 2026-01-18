@@ -1,21 +1,26 @@
 from rest_framework import serializers
-from .models import User
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(choices=User.Role.choices, default=User.Role.STAFF)
-    role_display = serializers.CharField(source='get_role_display', read_only=True)
-    password = serializers.CharField(write_only=True, required=True)
-
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name", "role", "role_display", "password"]
-        read_only_fields = ["id"]
+        fields = ['id', 'username', 'email', 'role', 'password']
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False},
+        }
 
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User.objects.create(**validated_data)
-        user.set_password(password)
-        user.save()
-        return user
+    def update(self, instance, validated_data):
+
+        role = validated_data.get('role')
+        if role in [choice[0] for choice in User.Role.choices]:
+            instance.role = role
+        validated_data.pop('role', None)
+
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
