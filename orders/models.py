@@ -6,14 +6,13 @@ from django.db.models import Sum, F
 from django.core.exceptions import ValidationError
 
 # Create your models here.
-STATUS_CHOICES = [
+class Order(models.Model):
+    STATUS_CHOICES = [
         ('New', 'New'),
         ('Preparing', 'Preparing'),
         ('Ready', 'Ready'),
         ('Delivered', 'Delivered'),
     ]
-
-class Order(models.Model):
     customer=models.ForeignKey(Customer,on_delete=models.PROTECT,related_name='orders')
     order_date=models.DateTimeField(auto_now_add=True)
     total_amount=models.DecimalField(max_digits=10,decimal_places=2,default=0)

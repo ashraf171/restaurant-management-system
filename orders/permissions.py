@@ -1,13 +1,22 @@
 from rest_framework.permissions import BasePermission
 
-class IsAdmin(BasePermission):
-    def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.role == 'admin'
-
 class IsManagerOrAdmin(BasePermission):
+    """
+    Admin: full CRUD
+    Manager: full CRUD (update_status)
+    Staff: read-only
+    """
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.role in ['admin', 'manager']
+        if not request.user.is_authenticated:
+            return False
 
-class IsStaffOrManagerOrAdmin(BasePermission):
-    def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.role in ['admin', 'manager', 'staff']
+        if request.user.role == 'admin':
+            return True
+
+        if request.user.role == 'manager':
+            return True
+
+        if request.user.role == 'staff':
+            return view.action in ['list', 'retrieve']  # staff read-only
+
+        return False

@@ -1,11 +1,8 @@
-# users
-from rest_framework import viewsets, permissions
+
+from rest_framework import viewsets
 from .models import User
 from .serializers import UserSerializer
-
-class IsAdminUserCustom(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_admin
+from .permissions import IsAdminUserCustom
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
