@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django
+db.sqlite3
+.env
+
+# Frontend (ignore completely)
+restaurant-frontend/
+
+# Node
+node_modules/
+dist/
