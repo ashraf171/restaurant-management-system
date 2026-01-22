@@ -1,37 +1,58 @@
 # Restaurant Management System
 
-**Author:** Ashraf, Nagham, Shapal, Souad
+**Authors:** Ashraf, Nagham, Shapal, Souad
 
-A complete Django REST Framework project to manage menu items, orders, customers, and users with role-based permissions. This project includes authentication, role-based permissions, CRUD operations for all main models, automated order total calculation, and a complete API ready for testing.
+A complete **Django REST Framework** project for managing users, customers, menu items, and orders with **role-based permissions**, JWT authentication, and fully documented APIs.  
 
-This system manages:
-
-- Users with roles: Admin, Manager, Staff
-- Customers
-- Menu (Categories & Products)
-- Orders (including order items and status workflow)
+This system allows Admins, Managers, and Staff to perform operations based on their roles, ensuring secure access and workflow management.
 
 ---
 
 ## Features
 
-- Admin: Full CRUD on users, menu, orders, and customers.
-- Manager: Read-only access to customers, orders, and menu; can update order statuses.
-- Staff: Read-only access for menu and orders.
-- Menu Management: Categories and products linked, full CRUD, role-based permissions.
-- Order Management: Create orders with multiple items, automatic total calculation, status workflow: New → Preparing → Ready → Delivered.
-- Customer Management: Add, view, update, delete customers; permissions controlled by role.
-- JWT Authentication: Only authenticated users can access APIs.
-- Role-based permissions applied on each endpoint.
-- Unit tests included for all apps (menu, customers, users, orders).
+- **Users & Roles**
+  - Admin: Full CRUD on users, menu, orders, and customers.
+  - Manager: Can manage orders (including status updates) and menu (CRUD), read-only on customers.
+  - Staff: Read-only access for menu and orders.
+
+- **Menu Management**
+  - Categories & Products linked
+  - CRUD operations with role-based access
+  - Available products endpoint for staff
+
+- **Order Management**
+  - Create orders with multiple items
+  - Automatic total calculation
+  - Status workflow: `New → Preparing → Ready → Delivered`
+
+- **Customer Management**
+  - Add, view, update, delete customers
+  - Permissions controlled by role
+
+- **Authentication**
+  - JWT-based (Access + Refresh tokens)
+  - Logout with refresh token blacklist
+
+- **Validation & Security**
+  - Input validation on all models
+  - Role-based permissions enforced
+  - SQL Injection safe (using Django ORM)
+
+- **Testing**
+  - Unit tests included for all apps
+  - Validates CRUD, permissions, and workflow logic
+
+- **Documentation**
+  - Swagger UI and Redoc using **drf-spectacular**
+  - Full endpoint summaries and request/response schemas
 
 ---
 
 ## Sample Data
 
-- Categories: Pizza, Drinks, Burgers, Desserts, Salads
-- Products: Margherita Pizza, Cola, Cheeseburger, Chocolate Cake, Caesar Salad
-- Customers: John Doe, Alice Smith, Bob Brown
+- **Categories:** Pizza, Drinks, Burgers, Desserts, Salads  
+- **Products:** Margherita Pizza, Cola, Cheeseburger, Chocolate Cake, Caesar Salad  
+- **Customers:** John Doe, Alice Smith, Bob Brown  
 
 Use Django admin or fixtures to load sample data.
 
@@ -39,15 +60,13 @@ Use Django admin or fixtures to load sample data.
 
 ## Installation
 
-1. Clone the repository:
+1. **Clone the repository**
 
 ```bash
 git clone https://github.com/ashraf171/restaurant-management-system.git
 cd restaurant-management-system
-Create a virtual environment and activate it:
+Create a virtual environment and activate it
 
-bash
-Copy code
 python -m venv venv
 
 # Linux/macOS
@@ -55,101 +74,88 @@ source venv/bin/activate
 
 # Windows
 venv\Scripts\activate
-Install dependencies:
 
-bash
-Copy code
+
+Install dependencies
+
 pip install -r requirements.txt
-Apply migrations:
 
-bash
-Copy code
+
+Apply migrations
+
 python manage.py migrate
-Create a superuser:
 
-bash
-Copy code
+
+Create a superuser
+
 python manage.py createsuperuser
-Run the development server:
 
-bash
-Copy code
+
+Run the development server
+
 python manage.py runserver
+
 API Endpoints
-Users
-/users/ [GET] - Admin - List all users
-
-/users/ [POST] - Admin - Create a new user
-
-/users/{id}/ [GET] - Admin - Retrieve user info
-
-/users/{id}/ [PUT] - Admin - Update user info
-
-/users/{id}/ [DELETE] - Admin - Delete user
-
+Users (Admin only)
+Method	Endpoint	Description
+GET	/api/users/	List all users
+POST	/api/users/	Create a new user
+GET	/api/users/{id}/	Retrieve user info
+PUT	/api/users/{id}/	Update user info
+DELETE	/api/users/{id}/	Delete user
 Customers
-/customers/customers/ [GET] - Admin, Manager - List all customers
-
-/customers/customers/ [POST] - Admin - Create a new customer
-
-/customers/customers/{id}/ [GET] - Admin, Manager - Retrieve customer info
-
-/customers/customers/{id}/ [PUT] - Admin - Update customer info
-
-/customers/customers/{id}/ [DELETE] - Admin - Delete customer
-
+Method	Endpoint	Role	Description
+GET	/api/customers/	Admin, Manager	List all customers
+POST	/api/customers/	Admin	Create a new customer
+GET	/api/customers/{id}/	Admin, Manager	Retrieve customer info
+PUT	/api/customers/{id}/	Admin	Update customer info
+DELETE	/api/customers/{id}/	Admin	Delete customer
 Menu
-/menu/categories/ [GET] - Admin, Manager - List categories
-
-/menu/categories/ [POST] - Admin - Create a category
-
-/menu/categories/{id}/ [GET] - Admin, Manager - Retrieve category
-
-/menu/categories/{id}/ [PUT] - Admin - Update category
-
-/menu/categories/{id}/ [DELETE] - Admin - Delete category
-
-/menu/products/ [GET] - Admin, Manager, Staff - List products
-
-/menu/products/ [POST] - Admin - Create product
-
-/menu/products/{id}/ [GET] - Admin, Manager, Staff - Retrieve product
-
-/menu/products/{id}/ [PUT] - Admin - Update product
-
-/menu/products/{id}/ [DELETE] - Admin - Delete product
-
+Categories
+Method	Endpoint	Role	Description
+GET	/api/categories/	Admin, Manager	List categories
+POST	/api/categories/	Admin	Create a category
+GET	/api/categories/{id}/	Admin, Manager	Retrieve category
+PUT	/api/categories/{id}/	Admin	Update category
+DELETE	/api/categories/{id}/	Admin	Delete category
+Products
+Method	Endpoint	Role	Description
+GET	/api/products/	Admin, Manager, Staff	List all products
+POST	/api/products/	Admin	Create product
+GET	/api/products/{id}/	Admin, Manager, Staff	Retrieve product
+PUT	/api/products/{id}/	Admin	Update product
+DELETE	/api/products/{id}/	Admin	Delete product
+GET	/api/products/available/	Admin, Manager, Staff	List only available products
 Orders
-/orders/orders/ [GET] - Admin, Manager - List orders
-
-/orders/orders/ [POST] - Admin - Create a new order
-
-/orders/orders/{id}/ [GET] - Admin, Manager - Retrieve order details
-
-/orders/orders/{id}/update_status/ [PUT] - Admin, Manager - Update order status
-
+Method	Endpoint	Role	Description
+GET	/api/orders/	Admin, Manager	List all orders
+POST	/api/orders/	Admin	Create new order
+GET	/api/orders/{id}/	Admin, Manager	Retrieve order details
+PUT	/api/orders/{id}/update_status/	Admin, Manager	Update order status (New → Preparing → Ready → Delivered)
 Authentication
-JWT-based authentication
-
-Only authenticated users can access the APIs
-
-Role-based access control applied to each endpoint
-
+Method	Endpoint	Description
+POST	/api/token/	Obtain JWT access & refresh tokens
+POST	/api/token/refresh/	Refresh access token
+POST	/api/logout/	Blacklist refresh token to logout user
 Running Tests
-Run all tests:
 
-bash
-Copy code
+Run all tests
+
 python manage.py test
-Run tests for a specific app:
 
-bash
-Copy code
+
+Run tests for a specific app
+
 python manage.py test menu
 python manage.py test customers
 python manage.py test users
 python manage.py test orders
+
+
+✅ All tests should pass if setup correctly.
+
 Notes
+
 Order total amounts are automatically calculated when creating orders.
 
 Order status transitions are restricted: New → Preparing → Ready → Delivered.
@@ -157,3 +163,13 @@ Order status transitions are restricted: New → Preparing → Ready → Deliver
 Staff users have read-only access to menu and orders.
 
 Managers can update order status but cannot create users or customers.
+
+JWT authentication is required for all API access.
+
+All endpoints are fully documented with Swagger and Redoc.
+
+API Documentation
+
+Schema: /api/schema/
+
+Swagger UI: /api/docs/

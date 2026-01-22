@@ -1,16 +1,36 @@
+# ======================
 # Python
+# ======================
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
-
-# Django
-db.sqlite3
+.Python
 .env
+.env.*
+venv/
+env/
+.venv/
 
-# Frontend (ignore completely)
-restaurant-frontend/
+# ======================
+# Django
+# ======================
+*.log
+media/
+staticfiles/
 
-# Node
-node_modules/
-dist/
+
+
+
+
+# ======================
+# OS
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# IDE
+# ======================
+.idea/
+.vscode/
