@@ -46,11 +46,25 @@ from .permissions import IsAdminUserCustom
         responses={204: None}
     )
 )
-class UserViewSet(viewsets.ModelViewSet):
 
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminUserCustom]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.role == User.Role.ADMIN and User.objects.filter(role=User.Role.ADMIN).count() == 1:
+            return Response({"detail": "Cannot delete the last admin"}, status=status.HTTP_400_BAD_REQUEST)
+        return super().destroy(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return User.objects.all()
 
 
 class LogoutView(APIView):
@@ -78,3 +92,4 @@ class LogoutView(APIView):
             return Response({"detail": "Logout successful"}, status=status.HTTP_200_OK)
         except TokenError:
             return Response({"detail": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+

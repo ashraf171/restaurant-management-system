@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from .permissions import CategoryPermission, ProductPermission
+from django.core.cache import cache
 
 @extend_schema_view(
     list=extend_schema(
@@ -46,6 +47,17 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [CategoryPermission]
 
+    def list(self, request, *args, **kwargs):
+        role = request.user.role
+        cache_key = f'products_list_{role}'
+
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        response = super().list(request, *args, **kwargs)
+        cache.set(cache_key, response.data, timeout=60)
+        return response
 
 
 @extend_schema_view(
@@ -104,9 +116,21 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        qs = Product.objects.select_related('category')
         if user.role == 'staff':
-            return Product.objects.filter(is_available=True)
-        return Product.objects.all()
+            return qs.filter(is_available=True)
+        return qs
+
+    def list(self, request, *args, **kwargs):
+        cache_key = 'products_list'
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(cached_data)
+
+        response = super().list(request, *args, **kwargs)
+        cache.set(cache_key, response.data, timeout=60)
+        return response
 
     @action(detail=False, methods=["get"], url_path="available")
     def available_products(self, request):

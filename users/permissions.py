@@ -1,11 +1,14 @@
 from rest_framework.permissions import BasePermission
 
 class IsAdminUserCustom(BasePermission):
-    message = "You must be an admin to perform this action."
+    message = "Admin access required."
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and getattr(request.user, "role", None) == 'admin')
-
+        return (
+            request.user and
+            request.user.is_authenticated and
+            request.user.role == request.user.Role.ADMIN
+        )
     def has_object_permission(self, request, view, obj):
 
         return self.has_permission(request, view)

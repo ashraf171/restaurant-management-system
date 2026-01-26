@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.text import slugify
-from customers.models import Customer
 
 
 class Category(models.Model):
@@ -13,13 +12,17 @@ class Category(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
         ordering = ['name']
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name.lower())
+            base_slug = slugify(self.name)
+            slug = base_slug
+            i = 1
+            while Category.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{i}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -28,7 +31,7 @@ class Category(models.Model):
 
 class ProductManager(models.Manager):
     def available(self):
-        return self.filter(is_available=True)
+        return self.filter(is_available=True, category__is_active=True)
 
 
 class Product(models.Model):

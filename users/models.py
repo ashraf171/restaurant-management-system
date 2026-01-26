@@ -31,15 +31,11 @@ class User(AbstractUser):
     objects = UserManager()
 
     def save(self, *args, **kwargs):
-        if self.role == self.Role.ADMIN:
+        if self.role in [self.Role.ADMIN, self.Role.MANAGER]:
             self.is_staff = True
-            self.is_superuser = True
-        elif self.role == self.Role.MANAGER:
-            self.is_staff = True
-            self.is_superuser = False
+
         else:
             self.is_staff = False
-            self.is_superuser = False
         super().save(*args, **kwargs)
 
     @property

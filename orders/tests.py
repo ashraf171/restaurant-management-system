@@ -31,7 +31,7 @@ class OrdersTests(TestCase):
 
     def test_admin_can_create_order(self):
         self.client.force_authenticate(user=self.admin)
-        response = self.client.post('/api/orders/orders/', {
+        response = self.client.post('/api/orders/', {
             "customer_id": self.customer.id,
             "items": [
                 {"product_id": self.prod1.id, "quantity": 1},
@@ -43,7 +43,7 @@ class OrdersTests(TestCase):
 
     def test_staff_cannot_create_order(self):
         self.client.force_authenticate(user=self.staff)
-        response = self.client.post('/api/orders/orders/', {
+        response = self.client.post('/api/orders/', {
             "customer_id": self.customer.id,
             "items": [{"product_id": self.prod1.id, "quantity": 1}]
         }, format='json')
@@ -51,17 +51,17 @@ class OrdersTests(TestCase):
 
     def test_staff_can_get_orders(self):
         self.client.force_authenticate(user=self.staff)
-        response = self.client.get('/api/orders/orders/')
+        response = self.client.get('/api/orders/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_order_status_valid(self):
         self.client.force_authenticate(user=self.manager)
-        response = self.client.put(f'/api/orders/orders/{self.order.id}/update_status/', {"status": "Preparing"}, format='json')
+        response = self.client.put(f'/api/orders/{self.order.id}/update_status/', {"status": "Preparing"}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['status'], "Preparing")
 
     def test_update_order_status_invalid_transition(self):
         self.client.force_authenticate(user=self.manager)
         # Trying to go from New -> Ready (skipping Preparing)
-        response = self.client.put(f'/api/orders/orders/{self.order.id}/update_status/', {"status": "Ready"}, format='json')
+        response = self.client.put(f'/api/orders/{self.order.id}/update_status/', {"status": "Ready"}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

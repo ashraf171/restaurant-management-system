@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework.exceptions import PermissionDenied
 
 User = get_user_model()
 
@@ -8,7 +9,9 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'role', 'password']
         extra_kwargs = {
-            'password': {'write_only': True, 'required': False},
+            'password': {'write_only': True},
+            'is_staff': {'read_only': True},
+            'is_superuser': {'read_only': True},
         }
 
     def validate_email(self, value):
@@ -18,23 +21,22 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
     def validate_role(self, value):
-
         request = self.context.get('request')
-        if value == User.Role.ADMIN and (not request or not request.user.is_admin):
-            raise serializers.ValidationError("Only admin can assign admin role")
-        return value
-
-    def validate_password(self, value):
-        if value and len(value) < 8:
-            raise serializers.ValidationError("Password must be at least 8 characters")
+        user = getattr(request, 'user', None)
+        if value == User.Role.ADMIN and (not user or user.role != User.Role.ADMIN):
+            raise PermissionDenied("Only admin can assign admin role")
         return value
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
         role = validated_data.pop('role', None)
+        user = getattr(self.context.get('request'), 'user', None)
 
-
-        if role:
+        if role is not None:
+            if not user or user.role != User.Role.ADMIN:
+                raise PermissionDenied("You cannot change user role")
+            if isinstance(role, str):
+                role = getattr(User.Role, role.upper(), role)
             instance.role = role
 
         for attr, value in validated_data.items():
@@ -42,14 +44,30 @@ class UserSerializer(serializers.ModelSerializer):
 
         if password:
             instance.set_password(password)
-
         instance.save()
         return instance
 
     def create(self, validated_data):
+        user = getattr(self.context.get('request'), 'user', None)
+
+        if 'role' in validated_data:
+            if isinstance(validated_data['role'], str):
+                validated_data['role'] = getattr(User.Role, validated_data['role'].upper())
+            if not user or user.role != User.Role.ADMIN:
+                validated_data['role'] = User.Role.STAFF
+        else:
+            validated_data['role'] = User.Role.STAFF
+
         password = validated_data.pop('password', None)
-        user = User(**validated_data)
+        user_obj = User(**validated_data)
         if password:
-            user.set_password(password)
-        user.save()
-        return user
+            user_obj.set_password(password)
+        user_obj.save()
+        return user_obj
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        user = getattr(self.context.get('request'), 'user', None)
+        if user and user.role != User.Role.ADMIN:
+            data.pop('role', None)
+        return data

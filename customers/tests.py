@@ -18,7 +18,7 @@ class CustomersTests(TestCase):
 
     def test_admin_can_create_customer(self):
         self.client.force_authenticate(user=self.admin)
-        response = self.client.post('/api/customers/customers/', {
+        response = self.client.post('/api/customers/', {
             'first_name': 'Alice',
             'last_name': 'Smith',
             'email': 'alice@example.com',
@@ -29,7 +29,7 @@ class CustomersTests(TestCase):
 
     def test_staff_cannot_create_customer(self):
         self.client.force_authenticate(user=self.staff)
-        response = self.client.post('/api/customers/customers/', {
+        response = self.client.post('/api/customers/', {
             'first_name': 'Bob',
             'last_name': 'Brown',
             'email': 'bob@example.com',
@@ -40,5 +40,5 @@ class CustomersTests(TestCase):
 
     def test_staff_can_get_customers(self):
         self.client.force_authenticate(user=self.staff)
-        response = self.client.get('/api/customers/customers/')
+        response = self.client.get('/api/customers/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
